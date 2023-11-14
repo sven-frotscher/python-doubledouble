@@ -73,13 +73,11 @@ except ImportError:
         e = ((s*t - r) + s*g + f*t) + f*g
         return r, e
 
-@dataclass(order=True, frozen=True)
+@dataclass(order=True, frozen=True, slots=True)
 class DoubleDouble:
     x: float
     y: float = 0.0
 
-#    __slots__ = 'x', 'y'
-    
     def __copy__(self):
         return self
     
