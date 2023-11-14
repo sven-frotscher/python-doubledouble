@@ -1,14 +1,14 @@
-# 
+#
 # doubledouble.py - Double-double aritmetic for Python
-# 
+#
 # https://github.com/sukop/doubledouble
 #
 # doubledouble.py is a library for computing with unevaluated sums of two double
-# precision floating-point numbers. The so-called "double-double arithmetic" 
+# precision floating-point numbers. The so-called "double-double arithmetic"
 # enables operations with at least 106-bit significand (2x53-bit) and 11-bit
 # exponent, compared to 113-bit and 15-bit, respectively, of the IEEE 754-2008
 # quadruple precision floating-point format.
-# 
+#
 # References:
 # Dekker, T. J. (1971). A Floating-Point Technique for Extending the Available
 # Precision. Numerische Mathematik 18, 224-242.
@@ -18,7 +18,7 @@
 # Implementation, and Application. Technical Report LBNL-46996.
 #
 # Install with `pip install doubledouble`.
-# 
+#
 # Copyright (c) 2017, Juraj Sukop
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -32,7 +32,7 @@
 # LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
 # OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
-# 
+#
 
 from math import exp, frexp, ldexp, log, sqrt
 from numbers import Integral
@@ -80,23 +80,23 @@ class DoubleDouble:
 
     def __copy__(self):
         return self
-    
+
     def __bool__(self):
         return self.x != 0.0 or self.y != 0.0
-    
+
     __nonzero__ = __bool__
-    
+
     def __pos__(self):
         return self
-    
+
     def __neg__(self):
         return DoubleDouble(-self.x, -self.y)
-    
+
     def __abs__(self):
         if self.x < 0.0:
             return -self
         return self
-    
+
     def __add__(self, other):
         if not isinstance(other, DoubleDouble):
             return other + self
@@ -104,13 +104,13 @@ class DoubleDouble:
         e += self.y + other.y
         r, e = _two_sum_quick(r, e)
         return DoubleDouble(r, e)
-    
+
     def __radd__(self, other):
         r, e = _two_sum(other, self.x)
         e += self.y
         r, e = _two_sum_quick(r, e)
         return DoubleDouble(r, e)
-    
+
     def __sub__(self, other):
         if not isinstance(other, DoubleDouble):
             return -other + self
@@ -118,13 +118,13 @@ class DoubleDouble:
         e += self.y - other.y
         r, e = _two_sum_quick(r, e)
         return DoubleDouble(r, e)
-    
+
     def __rsub__(self, other):
         r, e = _two_difference(other, self.x)
         e -= self.y
         r, e = _two_sum_quick(r, e)
         return DoubleDouble(r, e)
-    
+
     def __mul__(self, other):
         if not isinstance(other, DoubleDouble):
             return other*self
@@ -132,13 +132,13 @@ class DoubleDouble:
         e += self.x*other.y + self.y*other.x
         r, e = _two_sum_quick(r, e)
         return DoubleDouble(r, e)
-    
+
     def __rmul__(self, other):
         r, e = _two_product(other, self.x)
         e += other*self.y
         r, e = _two_sum_quick(r, e)
         return DoubleDouble(r, e)
-    
+
     def __truediv__(self, other):
         if not isinstance(other, DoubleDouble):
             other = DoubleDouble(other)
@@ -147,26 +147,26 @@ class DoubleDouble:
         e = (self.x - s - f + self.y - r*other.y)/other.x
         r, e = _two_sum_quick(r, e)
         return DoubleDouble(r, e)
-    
+
     def __rtruediv__(self, other):
         r = other/self.x
         s, f = _two_product(r, self.x)
         e = (other - s - f - r*self.y)/self.x
         r, e = _two_sum_quick(r, e)
         return DoubleDouble(r, e)
-    
+
     __div__ = __truediv__
-    
+
     __rdiv__ = __rtruediv__
-    
+
     def __pow__(self, other):
         if isinstance(other, Integral):
             return self.power(other)
         return (self.log()*other).exp()
-    
+
     def __rpow__(self, other):
         return DoubleDouble(other)**self
-    
+
     def power(self, n):
         b, i = self, abs(n)
         r = _one
@@ -180,7 +180,7 @@ class DoubleDouble:
         if n < 0:
             return 1.0/r
         return r
-    
+
     def sqrt(self):
         if self.x == 0.0:
             return _zero
@@ -189,7 +189,7 @@ class DoubleDouble:
         e = (self.x - s - f + self.y)*0.5/r
         r, e = _two_sum_quick(r, e)
         return DoubleDouble(r, e)
-    
+
     def root(self, n):
         if self.x < 0.0 and n%2 == 0:
             raise ValueError
@@ -202,7 +202,7 @@ class DoubleDouble:
         u = (n - 1)*w + (n + 1)*self
         v = (n + 1)*w + (n - 1)*self
         return r*(u/v)
-    
+
     def exp(self):
         n = int(round(self.x))
         x = self - n
@@ -221,29 +221,29 @@ class DoubleDouble:
             23465490048000)*x + 154872234316800)*x -
             647647525324800)*x + 1295295050649600
         return e.power(n)*(u/v)
-    
+
     def log(self):
         r = DoubleDouble(log(self.x))
         u = r.exp()
         r -= 2.0*(u - self)/(u + self)
         return r
-    
+
     def ldexp(self, n):
         r = ldexp(self.x, n)
         e = ldexp(self.y, n)
         return DoubleDouble(r, e)
-    
+
     def frexp(self):
         r, n = frexp(self.x)
         e = self.y/2**n
         return DoubleDouble(r, e), n
-    
+
     def __float__(self):
         return self.x
-    
+
     def __str__(self):
         return str(float(self))
-    
+
     def hex(self):
         if self.y < 0.0:
             return '(%s - %s)' % (self.x.hex(), (-self.y).hex())
