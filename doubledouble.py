@@ -73,7 +73,7 @@ except ImportError:
         e = ((s*t - r) + s*g + f*t) + f*g
         return r, e
 
-class DoubleDouble(object):
+class DoubleDouble:
     
     __slots__ = 'x', 'y'
     
