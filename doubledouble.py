@@ -34,7 +34,6 @@
 # PERFORMANCE OF THIS SOFTWARE.
 # 
 
-from __future__ import division
 from math import exp, frexp, ldexp, log, sqrt
 from numbers import Integral
 
