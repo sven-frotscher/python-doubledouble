@@ -246,8 +246,8 @@ class DoubleDouble:
 
     def hex(self):
         if self.y < 0.0:
-            return '(%s - %s)' % (self.x.hex(), (-self.y).hex())
-        return '(%s + %s)' % (self.x.hex(), self.y.hex())
+            return f'({self.x:#x} - {-self.y:#x})'
+        return f'({self.x:#x} + {self.y:#x})'
 
 _zero, _one = DoubleDouble(0.0), DoubleDouble(1.0)
 
