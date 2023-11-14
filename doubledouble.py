@@ -36,6 +36,7 @@
 
 from math import exp, frexp, ldexp, log, sqrt
 from numbers import Integral
+from dataclasses import dataclass
 
 def _two_sum_quick(x, y):
     r = x + y
@@ -72,48 +73,15 @@ except ImportError:
         e = ((s*t - r) + s*g + f*t) + f*g
         return r, e
 
+@dataclass(order=True, frozen=True)
 class DoubleDouble:
-    
-    __slots__ = 'x', 'y'
-    
-    def __init__(self, x, y=0.0):
-        self.x, self.y = float(x), float(y)
+    x: float
+    y: float = 0.0
+
+#    __slots__ = 'x', 'y'
     
     def __copy__(self):
         return self
-    
-    def __hash__(self):
-        return hash((self.x, self.y))
-    
-    def __eq__(self, other):
-        if not isinstance(other, DoubleDouble):
-            return self.x == other and self.y == 0.0
-        return self.x == other.x and self.y == other.y
-    
-    def __ne__(self, other):
-        if not isinstance(other, DoubleDouble):
-            return self.x != other or self.y != 0.0
-        return self.x != other.x or self.y != other.y
-    
-    def __lt__(self, other):
-        if not isinstance(other, DoubleDouble):
-            return self.x < other or self.x == other and self.y < 0.0
-        return self.x < other.x or self.x == other.x and self.y < other.y
-    
-    def __gt__(self, other):
-        if not isinstance(other, DoubleDouble):
-            return self.x > other or self.x == other and self.y > 0.0
-        return self.x > other.x or self.x == other.x and self.y > other.y
-    
-    def __le__(self, other):
-        if not isinstance(other, DoubleDouble):
-            return self.x < other or self.x == other and self.y <= 0.0
-        return self.x < other.x or self.x == other.x and self.y <= other.y
-    
-    def __ge__(self, other):
-        if not isinstance(other, DoubleDouble):
-            return self.x > other or self.x == other and self.y >= 0.0
-        return self.x > other.x or self.x == other.x and self.y >= other.y
     
     def __bool__(self):
         return self.x != 0.0 or self.y != 0.0
@@ -277,11 +245,6 @@ class DoubleDouble:
     
     def __str__(self):
         return str(float(self))
-    
-    def __repr__(self):
-        if self.y < 0.0:
-            return '(%s - %s)' % (repr(self.x), repr(-self.y))
-        return '(%s + %s)' % (repr(self.x), repr(self.y))
     
     def hex(self):
         if self.y < 0.0:
