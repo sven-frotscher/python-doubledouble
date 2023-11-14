@@ -249,10 +249,9 @@ class DoubleDouble:
             return f'({self.x:#x} - {-self.y:#x})'
         return f'({self.x:#x} + {self.y:#x})'
 
+
 _zero, _one = DoubleDouble(0.0), DoubleDouble(1.0)
 
-e, ln2, pi = \
-    DoubleDouble(2.718281828459045, 1.4456468917292502e-16), \
-    DoubleDouble(0.6931471805599453, 2.3190468138462996e-17), \
-    DoubleDouble(3.141592653589793, 1.2246467991473532e-16)
-
+e = DoubleDouble(2.718281828459045, 1.4456468917292502e-16)
+ln2 = DoubleDouble(0.6931471805599453, 2.3190468138462996e-17)
+pi = DoubleDouble(3.141592653589793, 1.2246467991473532e-16)
